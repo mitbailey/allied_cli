@@ -1,0 +1,6 @@
+[submodule "allied_vision_api"]
+	path = allied_vision_api
+	url = git@github.com:sunipkm/allied_vision_api
+[submodule "rtd_adio"]
+	path = rtd_adio
+	url = git@github.com:sunipkm/rtd_adio
