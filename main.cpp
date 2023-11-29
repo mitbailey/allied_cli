@@ -14,7 +14,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <czmq.h>
-#include <zyre.h>
 #include <alliedcam.h>
 #include <iostream>
 #include <math.h>
@@ -125,13 +124,13 @@ enum CommandNames
         break;                                          \
     }
 
-#define GET_CASE_STR(NAME)                                \
-    case CommandNames::NAME:                              \
-    {                                                     \
-        char *garg;                                       \
-        err = allied_get_##NAME(image_cam.handle, &garg); \
-        reply = garg;                                     \
-        break;                                            \
+#define GET_CASE_STR(NAME)                                              \
+    case CommandNames::NAME:                                            \
+    {                                                                   \
+        char *garg;                                                     \
+        err = allied_get_##NAME(image_cam.handle, (const char **)&garg); \
+        reply = garg;                                                   \
+        break;                                                          \
     }
 
 #define GET_CASE_DBL(NAME)                                \
@@ -468,7 +467,7 @@ int main(int argc, char *argv[])
     assert(pipe_name);
     // Set up ADIO
     DeviceHandle adio_dev = nullptr;
-    if (OpenDIO_aDIO(&adio_dev, 0) != 0)
+    if (OpenDIO_aDIO(&adio_dev, adio_minor_num) != 0)
     {
         dbprintlf(RED_FG "Could not initialize ADIO API. Check if /dev/rtd-aDIO* exists. aDIO features will be disabled.");
         adio_dev = nullptr;
@@ -751,10 +750,10 @@ int main(int argc, char *argv[])
                 err = VmbErrorNotFound;
             }
         }
-        char *ack_nac = "ACK";
+        char *ack_nac = (char *) "ACK";
         if (err != VmbErrorSuccess)
         {
-            ack_nac = "NAC";
+            ack_nac = (char *) "NAC";
         }
         zmsg_t *ack = zmsg_new();
         zmsg_pushstr(ack, ack_nac);       // ack or nack
